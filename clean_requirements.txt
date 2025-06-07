@@ -78,9 +78,9 @@ MarkupSafe
 matplotlib==3.10.0
 matplotlib-inline
 mistune 
-mkl-service==2.4.0
-mkl_fft 
-mkl_random
+# mkl-service==2.4.0
+# mkl_fft 
+# mkl_random
 mlflow==2.22.0
 mlflow-skinny==2.22.0
 mpmath 
@@ -154,9 +154,9 @@ tensorboard-data-server==0.7.2
 terminado
 threadpoolctl
 tinycss2 
-torch==2.7.0+cpu
-torchaudio==2.7.0+cpu
-torchvision==0.22.0+cpu
+torch==2.7.0
+torchaudio==2.7.0
+torchvision==0.22.0
 tornado 
 tqdm==4.67.1
 traitlets
