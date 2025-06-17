@@ -16,6 +16,7 @@ import mlflow
 import mlflow.pytorch
 from torch.utils.tensorboard import SummaryWriter
 import torchvision.utils as vutils
+import torch.nn.init as init
 
 def plot_to_tensorboard(fig, writer, tag, step):
     buf = io.BytesIO()
@@ -68,21 +69,48 @@ class CustomImageDataset(Dataset):
         return image, label
 
 class MLPClassifier(nn.Module):
-    def __init__(self, input_size=64*64*3, dropout = 0.0, num_classes=10):
-        super().__init__()
-        self.model = nn.Sequential(
-            nn.Flatten(),
-            nn.Linear(input_size, 512),
-            nn.Dropout(dropout),
-            nn.ReLU(),
-            nn.Linear(512, 128),
-            nn.Dropout(dropout),
-            nn.ReLU(),
-            nn.Linear(128, num_classes)
-        )
+        def __init__(self, input_size=64*64*3, dropout = 0.0, num_classes=10, init_type=None, BatchNorm= False ):
+            super().__init__()
+            self.init_type= init_type
+            if BatchNorm== True:
+                self.model = nn.Sequential(
+                    nn.Flatten(),
+                    nn.Linear(input_size, 512),
+                    nn.BatchNorm1d(512),
+                    nn.ReLU(),
+                    nn.Linear(512, 128),
+                    nn.BatchNorm1d(128),
+                    nn.ReLU(),
+                    nn.Linear(128, num_classes)
+                )
+            else:
+                self.model = nn.Sequential(
+                    nn.Flatten(),
+                    nn.Linear(input_size, 512),
+                    nn.Dropout(dropout),
+                    nn.ReLU(),
+                    nn.Linear(512, 128),
+                    nn.Dropout(dropout),
+                    nn.ReLU(),
+                    nn.Linear(128, num_classes)
+                )
+            self.init_weights()
 
-    def forward(self, x):
-        return self.model(x)
+        def forward(self, x):
+            return self.model(x)
+        
+        def init_weights(self):
+            if self.init_type is not None:
+                for m in self.model:
+                    if isinstance(m, nn.Linear):
+                        if self.init_type == 'He':
+                            init.kaiming_normal_(m.weight, nonlinearity='relu')
+                        elif self.init_type == 'xavier':
+                            init.xavier_uniform_(m.weight)
+                        elif self.init_type == 'uniform':
+                            init.uniform_(m.weight,a=0,b=1 )
+                        nn.init.zeros_(m.bias)
+
 
 class CNNClassifier(nn.Module):
     def __init__(self, input_size, dropout = 0.0, num_classes=10):
@@ -104,4 +132,5 @@ class CNNClassifier(nn.Module):
 
     def forward(self, x):
         return self.model(x)
+    
 
