@@ -179,3 +179,4 @@ runs/
 runs_compare/
 .pth
 runs_initializer/
+runs_pesos_iniciales/
