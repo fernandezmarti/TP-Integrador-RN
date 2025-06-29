@@ -115,29 +115,53 @@ class MLPClassifier(nn.Module):
 class CNNClassifier(nn.Module):
     def __init__(self, input_size, dropout = 0.0, num_classes=10):
         super().__init__()
-        self.model = nn.Sequential(
 
-            nn.Conv2d(3,16,3, padding = 1, padding_mode = "reflect"),
-            nn.BatchNorm2d(16),
-            nn.ReLU(),
-            nn.MaxPool2d(2,2),
-            nn.Conv2d(16,32,3, padding = 1, padding_mode = "reflect"),
-            nn.BatchNorm2d(32),
-            nn.ReLU(),
-            nn.MaxPool2d(2,2),
-            nn.Conv2d(32,64,3, padding = 1, padding_mode = "reflect"),
-            nn.BatchNorm2d(64),
-            nn.ReLU(),
-            nn.MaxPool2d(2,2),
+        if dropout>0:
+                self.model = nn.Sequential(
 
-            nn.Flatten(),
-            nn.Linear((input_size//8)**2*64, 128),
-            nn.BatchNorm1d(128),
-            nn.ReLU(),
-            nn.Linear(128, num_classes)
-        )
+                nn.Conv2d(3,16,3, padding = 1, padding_mode = "reflect"),
+                nn.ReLU(),
+                nn.Dropout(dropout),
+                nn.MaxPool2d(2,2),
+                nn.Conv2d(16,32,3, padding = 1, padding_mode = "reflect"),
+                nn.ReLU(),
+                nn.Dropout(dropout),
+                nn.MaxPool2d(2,2),
+                nn.Conv2d(32,64,3, padding = 1, padding_mode = "reflect"),
+                nn.ReLU(),
+                nn.Dropout(dropout),
+                nn.MaxPool2d(2,2),
+
+                nn.Flatten(),
+                nn.Linear((input_size//8)**2*64, 128),
+                nn.ReLU(),
+                nn.Linear(128, num_classes)
+            )
+        else:
+            self.model = nn.Sequential(
+
+                nn.Conv2d(3,16,3, padding = 1, padding_mode = "reflect"),
+                nn.BatchNorm2d(16),
+                nn.ReLU(),
+                nn.MaxPool2d(2,2),
+                nn.Conv2d(16,32,3, padding = 1, padding_mode = "reflect"),
+                nn.BatchNorm2d(32),
+                nn.ReLU(),
+                nn.MaxPool2d(2,2),
+                nn.Conv2d(32,64,3, padding = 1, padding_mode = "reflect"),
+                nn.BatchNorm2d(64),
+                nn.ReLU(),
+                nn.MaxPool2d(2,2),
+
+                nn.Flatten(),
+                nn.Linear((input_size//8)**2*64, 128),
+                nn.BatchNorm1d(128),
+                nn.ReLU(),
+                nn.Linear(128, num_classes)
+            )
 
     def forward(self, x):
         return self.model(x)
     
+
 
